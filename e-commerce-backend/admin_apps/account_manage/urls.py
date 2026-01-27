@@ -6,5 +6,6 @@ router.register("users",views.UserFetchApiView,basename='account_manager')
 
 urlpatterns = [
 
-    path("",include(router.urls))
+    path("",include(router.urls)),
+
 ]
