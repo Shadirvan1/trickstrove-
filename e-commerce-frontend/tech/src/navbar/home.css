@@ -1,0 +1,89 @@
+
+.home_nav{
+display: flex;
+
+justify-content: space-around;
+width: 80%;
+height: 10vh;
+top: 0px;
+margin-left:10vw ;
+background-color: black;
+align-items: center;
+}
+.navbar_li{
+    color: rgb(148, 145, 145);
+    padding: 10px;
+    text-decoration: none;
+  
+    
+}
+.navbar_li:hover{
+    color: white;
+
+}
+
+.nav_div{
+    background-color: black;
+    position: fixed;
+    width: 100%;
+    top: 0px;
+}
+.logout{
+    background-color:rgb(0, 0, 0);
+    border: none;
+    outline: none;
+    padding: 10px 20px;
+    border-radius: 30px;
+    color: rgb(148, 145, 145);
+
+}
+.logout:hover{
+    background-color: rgb(148, 145, 145);
+    color:rgb(0, 0, 0);
+    cursor:pointer
+}
+.profile{
+width: 3.7%;
+position: fixed;
+right: 4vw;
+cursor: pointer;
+}
+
+.profile_menu {
+  position: fixed;
+  top: 9vh;
+  right: 5vw;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 10px 0;
+  display: flex;
+  flex-direction: column;
+  min-width: 16vw; 
+  z-index: 1000;
+  transition: all 0.2s ease-in-out;
+}
+
+.profile_menu div, .profile_menu a, .profile_menu button {
+  padding: 8px 16px;
+  text-decoration: none;
+  color: #333;
+  cursor: pointer;
+  font-size: 18px;
+  border: none;
+  background: none;
+  text-align: left;
+}
+
+
+.profile_menu div:hover,
+.profile_menu a:hover,
+.profile_menu button:hover {
+  background-color: #f0f0f0;
+  color: #000;
+}
+
+
+.profile_menu button {
+  color: red;
+}

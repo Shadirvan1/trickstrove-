@@ -1,0 +1,55 @@
+.user_div {
+  margin-left: 20vw;
+  margin-top: 5vh;
+  width: 78vw;
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 2vw;
+  padding: 2vw;
+  height: 29vh;
+  box-sizing: border-box;
+}
+
+.user_div div {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  padding: 2vh 2vw;
+  text-align: center;
+ 
+
+  border: 1px solid #e0e0e0;
+  transition: all 0.3s ease;
+}
+
+.user_div div:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.25);
+  border-color: #007bff;
+}
+
+.user_div h1 {
+  font-size: 1.5vw;
+  font-weight: 600;
+  
+  color: #333;
+  margin: 0;
+}
+.chart{
+
+    position: absolute;
+    margin-left: 19vw;
+    margin-top: 18vw;
+    width: 60%;
+    
+}
+.sales{
+    position: absolute;
+    margin-left: 72vw;
+    margin-top: 19vw;
+    width: 60%;
+}
+.h1{
+    position: absolute;
+    margin-left: 50vw;
+}

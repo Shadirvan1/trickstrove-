@@ -1,0 +1,10 @@
+.error_div {
+ position:fixed;
+top: 50vh;
+left: 49vw;
+font-size: 30px;
+
+}
+.img_products{
+    width: 8%;
+}
