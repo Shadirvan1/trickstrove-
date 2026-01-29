@@ -11,6 +11,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = CoustomUser
         fields = ['username','email','password','password2','phone_number']
     def validate_phone_number(self, data):
+<<<<<<< HEAD
         if len(data) < 6 or len(data) > 15:
             raise serializers.ValidationError("Give a correct number")
         return data
@@ -21,6 +22,17 @@ class UserSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("You can't set 1234 as password")
         return data
 
+=======
+        if len(data) > 15 and len(data) < 6:
+            raise serializers.ValidationError("Give a correct number")
+    def validate_password(self, data):
+        if len(data) > 24 and len(data) < 4 :
+            raise serializers.ValidationError("password must in 4 to 24 range")
+
+        if data == '1234':
+            raise serializers.ValidationError("You can't set 1234 as password")
+        return data
+>>>>>>> 4bef0795896418d3e54b7da0f6ad34221b1cb3dd
     def validate(self,data):
         if data['password'] != data['password2']:
             raise serializers.ValidationError('Password do not match')
