@@ -19,7 +19,7 @@ const navigate = useNavigate()
         localStorage.setItem("isAdmin",res.data.user.isAdmin)
 
       }else{
-        navigate('/home')
+        navigate('/')
       }
 
 

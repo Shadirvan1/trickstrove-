@@ -10,21 +10,19 @@ export default function Navbar() {
 
    useEffect(() => {
     AOS.init({
-      duration: 1500,  // animation duration in ms
-      easing: "ease-in-out", // smooth animation
-      once: true,      // animate only once when scrolling down
+      duration: 1500, 
+      easing: "ease-in-out", 
+      once: true,      
     });
   }, []);
 
   const navigate = useNavigate();
-  const [userId, setUserId] = useState(localStorage.getItem("username"));
+  const [userId, setUserId] = useState(localStorage.getItem("user_id"));
   const [profileOpen, setProfileOpen] = useState(false);
-  const username = localStorage.getItem("username1");
+  const username = localStorage.getItem("username");
   const toggleProfile = () => setProfileOpen(!profileOpen);
     const logout = () => {
-    localStorage.removeItem("username");
-    localStorage.removeItem("username1");
-    localStorage.removeItem("cartlength");
+    localStorage.clear()
     setUserId(null);
     setProfileOpen(false);
     navigate("/");
@@ -37,13 +35,12 @@ export default function Navbar() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16">
 
-        {/* Logo */}
         <div className="flex-shrink-0 cursor-pointer" onClick={() => navigate("/home")}>
           <img src={mylogo} alt="Logo" className="h-10 w-auto" />
         </div>
 
 
-        {/* Nav */}
+
         <nav className="flex items-center gap-4">
  
           <NavLink to="/" className="p-2 rounded-md hover:bg-white/10 transition">
@@ -75,7 +72,7 @@ export default function Navbar() {
             </>
           )}
 
-          {/* Profile */}
+
           <div className="relative">
             <img
               src={userId ? login : guest}
