@@ -34,6 +34,7 @@ ALLOWED_HOSTS = ["e-tricktrove.onrender.com"]
 
 CORS_ALLOWED_ORIGINS = [
    "https://trickstrove.onrender.com",
+   "http://localhost:5174",
 ]
 
 # Application definition
