@@ -5,6 +5,7 @@ import api from "./api/api";
 export default function SingleProduct() {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
+  const [quantity, setQuantity] = useState(1);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -19,8 +20,18 @@ export default function SingleProduct() {
     fetchProduct();
   }, [id]);
 
+  const addToCart = async () => {
+    try {
+      const res = await api.post("cart/add/", { product: id, quantity });
+      alert(`${res.data.product} added to cart! Quantity: ${res.data.quantity}`);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to add product to cart.");
+    }
+  };
+
   if (!product) return <div className="p-6">Loading...</div>;
-console.log(product)
+
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <button
@@ -41,7 +52,39 @@ console.log(product)
           <p className="text-gray-700 mb-2">{product.category}</p>
           <p className="font-bold text-xl mb-4">${product.price}</p>
           <p className="mb-4">{product.description}</p>
-          <p className="text-gray-600">Quantity: {product.quantity}</p>
+          <p className="text-gray-600 mb-4">Available Quantity: {product.quantity}</p>
+
+          <div className="flex items-center gap-2 mb-4">
+            <button
+              onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
+              className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
+            >
+              -
+            </button>
+            <input
+              type="number"
+              value={quantity}
+              min={1}
+              max={product.quantity}
+              onChange={(e) =>
+                setQuantity(Math.min(Math.max(1, Number(e.target.value)), product.quantity))
+              }
+              className="w-16 text-center border rounded"
+            />
+            <button
+              onClick={() => setQuantity((prev) => Math.min(prev + 1, product.quantity))}
+              className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
+            >
+              +
+            </button>
+          </div>
+
+          <button
+            onClick={addToCart}
+            className="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+          >
+            Add to Cart
+          </button>
         </div>
       </div>
     </div>

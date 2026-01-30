@@ -11,9 +11,8 @@ const adminId =  localStorage.removeItem("adminId");
 
 
   const handleLogout = () => {
-    localStorage.removeItem("isAdmin");
-    localStorage.removeItem("adminId");
-    navigate("/admin");
+    localStorage.clear()
+    navigate("/login");
   }
   const handleAdmin = () => {
    

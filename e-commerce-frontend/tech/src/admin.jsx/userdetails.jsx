@@ -1,94 +1,167 @@
-import axios from "axios";
-import { useState,useEffect } from "react";
-import "./user.css"
-import {  useNavigate } from "react-router-dom";
-export default function User(){
-    const navigate = useNavigate()
-const [user,setUser]=useState([])
-const [block,setBlock]=useState(false)
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import adminapi from "../api/adminapi";
 
-useEffect(()=>{
-axios.get(`http://localhost:5000/users`)
-.then((res)=>setUser(res.data))
-.catch((err)=>console.log("error",err))
-},[])
+export default function User() {
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+ const user_id = Number(localStorage.getItem("user_id"))
+  useEffect(() => {
+    fetchUsers();
+  }, []);
 
-
-
-const handleOrder =(id)=>{
-navigate(`/adminPanel/userdetails/order/${id}`)
-    
-}
-const handleWish = (id)=>{
-navigate(`/adminPanel/userdetails/wish/${id}`)
-
-}
-
-
-const handleBlock=async(id)=>{
-
- const userToToggle = user.find(u => u.id === id);
-   const newStatus = !userToToggle.active;
-  if (!userToToggle) return;
-    try{
-
-
-
-
-await axios.patch(`http://localhost:5000/users/${id}`,{active:newStatus})
- setUser(user.map(u =>
-      u.id === id ? { ...u, active: newStatus } : u
-    ));
-
-} catch (err){
-console.log(err,"error")
-}
-
-}
-
-const handleRemove =async(id)=>{
-
-
-  
-    try{
-        await axios.delete(`http://localhost:5000/users/${id}`)
-     
-setUser(user.filter((item)=>item.id !== id))
-        
-    }catch{
-        console.log("error");
-        
+  const fetchUsers = async () => {
+    try {
+      const res = await adminapi.get("user/users/");
+      setUsers(res.data);
+    } catch (err) {
+      console.error("Failed to fetch users", err);
+    } finally {
+      setLoading(false);
     }
-}
+  };
 
-return(
+  const toggleUser = async (userId) => {
+    try {
+      await adminapi.patch(`user/users/${userId}/togleuser/`);
+      setUsers((prev) =>
+        prev.map((u) =>
+          u.id === userId ? { ...u, is_active: !u.is_active } : u
+        )
+      );
+    } catch (err) {
+      console.error("Failed to toggle user", err);
+    }
+  };
+
+  const getRoleBadge = (user) => {
+    if (user.is_superuser) {
+      return (
+        <span className="px-2 py-1 rounded text-xs bg-purple-100 text-purple-700">
+          Superuser
+        </span>
+      );
+    }
+    if (user.is_staff) {
+      return (
+        <span className="px-2 py-1 rounded text-xs bg-blue-100 text-blue-700">
+          Admin
+        </span>
+      );
+    }
+    return (
+      <span className="px-2 py-1 rounded text-xs bg-gray-100 text-gray-700">
+        User
+      </span>
+    );
+  };
+
+  if (loading) {
+    return <div className="ml-[20vw] p-6">Loading users...</div>;
+  }
+
+  return (
+    <div className="ml-[20vw] w-[80vw] p-6 bg-gray-50 min-h-screen">
+      <h1 className="text-3xl font-bold mb-6 text-gray-800">
+        User Management
+      </h1>
+
+      <div className="overflow-x-auto bg-white shadow rounded-lg">
+        <table className="min-w-full text-sm">
+          <thead className="bg-gray-100">
+            <tr>
+              <th className="px-4 py-3 border text-left">ID</th>
+              <th className="px-4 py-3 border text-left">Username</th>
+              <th className="px-4 py-3 border text-left">Email</th>
+              <th className="px-4 py-3 border text-left">Role</th>
+              <th className="px-4 py-3 border text-left">Verified</th>
+              <th className="px-4 py-3 border text-left">Status</th>
+              <th className="px-4 py-3 border text-center">Actions</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {users.map((user) => (
+              <tr key={user.id} className="hover:bg-gray-50">
+                <td className="px-4 py-2 border">{user.id}</td>
+                <td className="px-4 py-2 border">{user.username}</td>
+                <td className="px-4 py-2 border">{user.email}</td>
+
+                <td className="px-4 py-2 border">
+                  {getRoleBadge(user)}
+                </td>
+
+                <td className="px-4 py-2 border">
+                  {user.is_verified ? (
+                    <span className="text-green-600 font-semibold">
+                      Yes
+                    </span>
+                  ) : (
+                    <span className="text-red-600 font-semibold">
+                      No
+                    </span>
+                  )}
+                </td>
+
+                <td className="px-4 py-2 border">
+                  <span
+                    className={`px-2 py-1 rounded text-xs font-semibold ${
+                      user.is_active
+                        ? "bg-green-100 text-green-700"
+                        : "bg-red-100 text-red-700"
+                    }`}
+                  >
+                    {user.is_active ? "Active" : "Blocked"}
+                  </span>
+                </td>
+
+                <td className="px-4 py-2 border text-center">
+                  <div className="flex justify-center gap-2 flex-wrap">
+
+{user.id !== user_id && (
+  <>
+    <button
+      onClick={() => navigate(`/admin/edituser/${user.id}`)}
+      className="px-3 py-1 text-xs rounded bg-blue-500 text-white hover:bg-blue-600"
+    >
+      Edit
+    </button>
+
+    <button
+      onClick={() => navigate(`/admin/order/${user.id}`)}
+      className="px-3 py-1 text-xs rounded bg-indigo-500 text-white hover:bg-indigo-600"
+    >
+      Orders
+    </button>
+  </>
 
 
+)}
+                    {user.is_superuser ? (
+                        <span className="text-gray-400 text-xs px-2 py-1">
+                        Protected
+                      </span>
+                    ) : (
+                      <button
+                        onClick={() => toggleUser(user.id)}
+                        className={`px-3 py-1 rounded text-white text-xs ${
+                          user.is_active
+                            ? "bg-red-500 hover:bg-red-600"
+                            : "bg-green-500 hover:bg-green-600"
+                        }`}
+                      >
+                        {user.is_active ? "Block" : "Unblock"}
+                      </button>
+                    )}
 
-    <>
-    <div className="head">
-    <h1>User details:</h1></div>
-    <div className="container1">
-
-
-{
-user.map((item)=>(
-<><div  key={item.id} className="grid_div">
-    <div className="id">Id : { item.id}</div>
-    <div className="name">Name : { item.name}</div>
-    <div className="email">Email : { item.email}</div>
-  <div className="item_div">  <button className="buttonn_div" onClick={()=>handleOrder(item.id)}>Orders</button></div>
-  <div className="item_div">  <button className="buttonn_div" onClick={()=>handleWish(item.id)}>Wishlist</button></div>
-  <div className="item_div">  <button className="buttonn_div" onClick={()=>handleBlock(item.id)}>{item.active ? "block" : "Activate"}</button></div>
-  <div className="item_div">  <button className="buttonn_div" onClick={()=>handleRemove(item.id)}>Remove</button></div>
-   
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
-</>
-))
-}
-
-</div>
-</>
-)
-
+  );
 }

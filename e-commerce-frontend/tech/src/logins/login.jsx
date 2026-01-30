@@ -10,7 +10,7 @@ const navigate = useNavigate()
     e.preventDefault();
     try{
       const res=await logapi.post("user/login/",data);
-      localStorage.setItem("token",res.data.user.access);
+      localStorage.setItem("access_token",res.data.user.access);
       localStorage.setItem('email',res.data.user.email)
       localStorage.setItem('refresh',res.data.user.refresh)
       localStorage.setItem('user_id',res.data.user.user_id)

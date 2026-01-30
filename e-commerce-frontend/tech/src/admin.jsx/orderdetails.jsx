@@ -1,107 +1,147 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-import "./orderdetails.css";
-import { Navigate, useNavigate } from "react-router-dom";
-import "./orderhistory.css"
-export default function Pending() {
-  const [users, setUsers] = useState([]);
-  const [address,setAddress]=useState({})
-const navigate = useNavigate()
+import adminapi from "../api/adminapi";
+import { useNavigate } from "react-router-dom";
+
+export default function OrderDetails() {
+  const [orders, setOrders] = useState([]);
+  const navigate = useNavigate();
+
   useEffect(() => {
-    axios
-      .get("http://localhost:5000/users")
-      .then((res) =>{ setUsers(res.data)
-       const data = res.data
-      const datas = data.map((item)=>item.paymentInfo)
-     setAddress(datas)
-     console.log(datas)
-      })
-      .catch((err) => console.error("Error fetching users:", err));
+    adminapi
+      .get("order/getorders/") 
+      .then((res) => setOrders(res.data))
+      .catch((err) => console.error("Error fetching orders:", err));
   }, []);
 
-  
-  const handleOrder = async (userId, itemId) => {
+  const handleStatusChange = async (deliveryId, status) => {
     try {
-      const { data } = await axios.get(`http://localhost:5000/users/${userId}`);
+      await adminapi.patch(
+        `order/update/0/`, 
+        {
+          delivery_id: deliveryId,
+          status: status,
+        }
+      );
 
-      if (!data.order) return;
-
-      const updatedOrders = data.order.filter((item) => item.id !== itemId);
-      const postedOrder = data.order.find((item) => item.id === itemId);
-
-    
-      await axios.patch(`http://localhost:5000/users/${userId}`, {
-        order: updatedOrders,
-      });
-
-      await axios.post("http://localhost:5000/orders", {
-        ...postedOrder,
-        userId,
-        userName: data.name, 
-        status: "completed",
-      });
-
-   
-      setUsers((prev) =>
-        prev.map((u) =>
-          u.id === userId ? { ...u, order: updatedOrders } : u
+      setOrders((prev) =>
+        prev.map((order) =>
+          order.delivery.id === deliveryId
+            ? {
+                ...order,
+                delivery: { ...order.delivery, status: status },
+              }
+            : order
         )
       );
     } catch (err) {
-      console.error("Error moving order:", err);
+      console.error("Error updating delivery status:", err);
     }
   };
-const handleHistory = ()=>{
-  navigate("/adminpanel/orderhistory")
-}
-  const hasPending = users.some((u) => u.order && u.order.length > 0);
+
+
   return (
-    <div className="container_div">
-      {!hasPending ? (
-        <div className="empty_div">No pending orders</div>
-      ) : (
-        users.map(
-          (u) =>
-            u.order &&
-            u.order.length > 0 && (
-              <div key={u.id} className="user_orders">
-                <h2  className="user_title">User Id :{u.id}</h2>
+<div className="ml-[18vw] w-[80vw] p-6 bg-gray-50 min-h-screen">
+  <h1 className="text-3xl font-bold mb-6 text-gray-800">Order Details</h1>
 
-                <div className="header_row">
-                  <div>Product Name</div>
-                  <div>Product ID</div>
-                  <div>Price</div>
-                  <div>Quantity</div>
-                  <div>Reciver name</div>
-                  <div>Reciver address</div>
-                  <div>Reciver pincode</div>
-                  <div>Action</div>
-                </div>
-
-                {u.order.map((item,index) => (
-                  <div key={item.id} className="data_row">
-                    <div>{item.name}</div>
-                    <div>{item.id}</div>
-                    <div>₹{item.price}</div>
-                    <div>{item.items}</div>
-                    <div>{u.paymentInfo?.name || "non"}</div>
-                    <div  style={{overflow:"scroll"}}>{u.paymentInfo?.address || "non" }</div>
-                    <div>{u.paymentInfo?.pincode || "non"}</div>
-
-                   
-                    <button
-                      className="order_btn"
-                      onClick={() => handleOrder(u.id, item.id)}
-                    >
-                      Complete order
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )
-        )
-      )}
-      <button className="orderhistory" onClick={handleHistory}>Order history</button>
+  {orders.length === 0 ? (
+    <div className="text-center text-gray-500 text-lg py-20">
+      No orders found
     </div>
+  ) : (
+    <div className="flex flex-col gap-6">
+      {orders.map((order) => (
+        <div
+          key={order.id}
+          className="bg-white shadow-md rounded-lg p-6 border border-gray-200 w-full"
+        >
+          <h2 className="text-xl font-semibold mb-4 text-gray-700">
+            Order ID: {order.id}
+          </h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4 w-full">
+            <div className="w-full">
+              <span className="font-medium text-gray-600">Product:</span>{" "}
+              {order.product_name}
+            </div>
+            <div className="w-full">
+              <span className="font-medium text-gray-600">Price:</span> ₹
+              {order.product_price}
+            </div>
+            <div className="w-full">
+              <span className="font-medium text-gray-600">Quantity:</span>{" "}
+              {order.quantity}
+            </div>
+            <div className="w-full">
+              <span className="font-medium text-gray-600">Subtotal:</span> ₹
+              {order.subtotal}
+            </div>
+          </div>
+
+          
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4 w-full">
+            <div className="w-full">
+              <span className="font-medium text-gray-600">Receiver:</span>{" "}
+              {order.address.full_name}
+            </div>
+            <div className="w-full">
+              <span className="font-medium text-gray-600">Phone:</span>{" "}
+              {order.address.phone}
+            </div>
+            <div className="w-full">
+              <span className="font-medium text-gray-600">Address:</span>{" "}
+              {order.address.address}
+            </div>
+            <div className="w-full">
+              <span className="font-medium text-gray-600">Pincode:</span>{" "}
+              {order.address.pincode}
+            </div>
+          </div>
+
+          {/* Payment & Delivery */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center w-full">
+            <div>
+              <span className="font-medium text-gray-600">Payment Status:</span>{" "}
+              {order.payment.status}
+            </div>
+            <div>
+              <span className="font-medium text-gray-600">Delivery Status:</span>{" "}
+              <span
+                className={`px-2 py-1 rounded font-semibold ${
+                  order.delivery.status === "DELIVERED"
+                    ? "bg-green-100 text-green-800"
+                    : order.delivery.status === "PENDING"
+                    ? "bg-yellow-100 text-yellow-800"
+                    : order.delivery.status === "PROCESSING"
+                    ? "bg-blue-100 text-blue-800"
+                    : "bg-red-100 text-red-800"
+                }`}
+              >
+                {order.delivery.status}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <label className="font-medium text-gray-600">
+                Update Status:
+              </label>
+              <select
+                className="border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={order.delivery.status}
+                onChange={(e) =>
+                  handleStatusChange(order.delivery.id, e.target.value)
+                }
+              >
+                <option value="PENDING">PENDING</option>
+                <option value="SHIPPED">SHIPPED</option>
+                <option value="DELIVERED">DELIVERED</option>
+                <option value="CANCELLED">CANCELLED</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  )}
+</div>
+
   );
 }

@@ -1,154 +1,141 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
-import "./productss.css";
-import Plus from "../pics/plus.png";
+import adminapi from "../api/adminapi";
 import { useNavigate } from "react-router-dom";
+import Plus from "../pics/plus.png";
 
-export default function Home() {
-  const userId = localStorage.getItem("username");
-  localStorage.setItem("userid", userId);
-
+export default function AdminProducts() {
   const navigate = useNavigate();
 
-  const [data, setData] = useState([]);
-  const [filteredData, setFilteredData] = useState([]);
-  const [brand, setBrand] = useState([]);
-  const [product, setProduct] = useState({
-    name: "",
-    image: "",
-    brand: "",
-    category: "",
-    price: "",
-    description: "",
-    quantity: 1,
-  });
+  const [products, setProducts] = useState([]);
+  const [filtered, setFiltered] = useState([]);
+  const [brands, setBrands] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios
-      .get("http://localhost:5000/products")
-      .then((res) => {
-        setData(res.data);
-        setFilteredData(res.data);
-
-        const uniqueBrands = [...new Set(res.data.map((item) => item.brand))];
-        setBrand(uniqueBrands);
-      })
-      .catch((err) => console.log("failed to fetch products", err));
+    fetchProducts();
   }, []);
 
-  const handleEdit = (id) => {
-    navigate(`/adminpanel/edit/${id}`);
+  const fetchProducts = async () => {
+    try {
+      const res = await adminapi.get("product/products/");
+      setProducts(res.data);
+      setFiltered(res.data);
+
+      const uniqueBrands = [
+        "All",
+        ...new Set(res.data.map((p) => p.brand).filter(Boolean)),
+      ];
+      setBrands(uniqueBrands);
+    } catch (err) {
+      console.error("Failed to fetch products", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleRemove = async (id) => {
+  const handleFilter = (brand) => {
+    if (brand === "All") {
+      setFiltered(products);
+    } else {
+      setFiltered(products.filter((p) => p.brand === brand));
+    }
+  };
+
+  const toggleProduct = async (id, currentStatus) => {
     try {
-      const productToUpdate = data.find((item) => item.id === id);
-      if (!productToUpdate) return;
+      const newStatus = currentStatus === "active" ? "inactive" : "active";
 
-      const newActivity =
-        productToUpdate.activity === "active" ? "inactive" : "active";
-
-      await axios.patch(`http://localhost:5000/products/${id}`, {
-        activity: newActivity,
+      await adminapi.patch(`product/products/${id}/`, {
+        activity: newStatus,
       });
 
-      const update = data.map((item) =>
-        item.id === id ? { ...item, activity: newActivity } : item
+      const updated = products.map((p) =>
+        p.id === id ? { ...p, activity: newStatus } : p
       );
 
-      setData(update);
-      setFilteredData(update); 
-    } catch (error) {
-      console.log("Error removing product:", error);
+      setProducts(updated);
+      setFiltered(updated);
+    } catch (err) {
+      console.error("Failed to toggle product", err);
     }
   };
 
-  const handleNew = async () => {
-    const res = await axios.post(`http://localhost:5000/products`, product);
-    const ids = res.data.id;
-    navigate(`/adminpanel/edit/${ids}`);
-  };
-
-  const handleSort = (brandName) => {
-    if (brandName === "All") {
-      setFilteredData(data);
-    } else {
-      const filtered = data.filter((item) => item.brand === brandName);
-      setFilteredData(filtered);
-    }
-  };
+  if (loading) {
+    return <div className="ml-[20vw] p-6">Loading products...</div>;
+  }
 
   return (
-    <>
-      <nav className="navbar">
-        <div onClick={() => handleSort("All")} className="brand_div">
-          All
+    <div className="ml-[20vw] w-[80vw] p-6 bg-gray-50 min-h-screen">
+      <h1 className="text-3xl font-bold mb-6">Product Management</h1>
+
+      <div className="flex gap-3 mb-6 flex-wrap">
+        {brands.map((b, i) => (
+          <button
+            key={i}
+            onClick={() => handleFilter(b)}
+            className="px-4 py-1 rounded bg-gray-200 hover:bg-gray-300 text-sm"
+          >
+            {b}
+          </button>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div
+          onClick={()=>navigate("/adminpanel/createproduct")}
+          className="cursor-pointer border-2 border-dashed rounded-lg flex flex-col items-center justify-center h-64 bg-white hover:bg-gray-100"
+        >
+          <img src={Plus} alt="Add" className="w-10 mb-2" />
+          <p className="font-semibold">Add Product</p>
         </div>
 
-        {brand.map((brand, index) => (
+        {filtered.map((p) => (
           <div
-            onClick={() => handleSort(brand)}
-            key={index}
-            className="brand_div"
+            key={p.id}
+            className="bg-white rounded-lg shadow p-3 flex flex-col"
           >
-            {brand}
+            <img
+              src={p.image}
+              alt={p.name}
+              className="h-40 object-cover rounded"
+            />
+
+            <h3 className="mt-2 font-semibold">{p.name}</h3>
+            <p className="text-xs text-gray-500">{p.category}</p>
+            <p className="font-bold mt-1">₹{p.price}</p>
+
+            <span
+              className={`text-xs mt-1 px-2 py-1 rounded w-fit ${
+                p.activity === "active"
+                  ? "bg-green-100 text-green-700"
+                  : "bg-red-100 text-red-700"
+              }`}
+            >
+              {p.activity}
+            </span>
+
+            <div className="flex gap-2 mt-auto pt-3">
+              <button
+                onClick={() => navigate(`/adminpanel/edit/${p.id}`)}
+                className="flex-1 text-xs bg-blue-500 text-white rounded py-1 hover:bg-blue-600"
+              >
+                Edit
+              </button>
+
+              <button
+                onClick={() => toggleProduct(p.id, p.activity)}
+                className={`flex-1 text-xs rounded py-1 text-white ${
+                  p.activity === "active"
+                    ? "bg-red-500 hover:bg-red-600"
+                    : "bg-green-500 hover:bg-green-600"
+                }`}
+              >
+                {p.activity === "active" ? "Deactivate" : "Activate"}
+              </button>
+            </div>
           </div>
         ))}
-      </nav>
-
-      <div className="products_div1">
-        <div className="product_list1">
-          <div className="product_grid2" onClick={handleNew}>
-            <img className="plus" src={Plus} alt="Add new" />
-            <h1>Add new</h1>
-          </div>
-
-          {filteredData.filter((item)=>item.name!== "").map((t) => (
-            <div className="product_grid1" key={t.id}>
-              <div style={{ width: "88%" }} className="img_products1">
-                <img
-                  style={{ borderRadius: "10px" }}
-                  src={t.image}
-                  alt={t.name}
-                  width="100%"
-                />
-              </div>
-              <div style={{ padding: "1vw" }}>
-                <h4>{t.name}</h4>
-              </div>
-              <div style={{ padding: "1vw", width: "100%" }}>
-                <h6>{t.description}</h6>
-              </div>
-              <div className="btn_product1">
-                <div>
-                  <h6>₹{t.price}</h6>
-                </div>
-                <div>
-                  <h6>category : {t.category}</h6>
-                </div>
-                <div>
-                  <h6>Activity : {t.activity}</h6>
-                </div>
-              </div>
-
-              <div className="btn_div1">
-                <button
-                  className="cart_button1"
-                  onClick={() => handleEdit(t.id)}
-                >
-                  Edit
-                </button>
-                <button
-                  className="cart_button11"
-                  onClick={() => handleRemove(t.id)}
-                >
-                  Remove
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
       </div>
-    </>
+    </div>
   );
 }

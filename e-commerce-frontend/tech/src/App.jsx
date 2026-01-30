@@ -18,11 +18,14 @@ import Userorder from "./admin.jsx/userproducts";
 import Userwhish from "./admin.jsx/userwishlist";
 import Productss from "./admin.jsx/productss";
 import Edit from "./admin.jsx/edit";
-import Payment from "./cart-fav/payment";
+import Payment from "./cart-fav/payment"
+import PaymentPage from "./cart-fav/order_payment";
 import OrderHistory from "./admin.jsx/orderhistory";
 import Store from "./store";
+import CreateProduct from "./admin.jsx/createproduct";
 import VerifyOtp from "./logins/otp_verify";
 import ResendOtp from "./logins/resendotp";
+import EditUser from "./admin.jsx/edituser";
 export default function App (){
 
 
@@ -40,8 +43,9 @@ export default function App (){
 <Route path="cart" element={<Cart />} />
 <Route path="complete" element={<Success />} />
 <Route path="wishlist" element={<Wish />} />
-<Route path="order" element={<Order />} />
+<Route path="orders" element={<Order />} />
 <Route path="payment" element={<Payment />} />
+<Route path="paymentpage" element={<PaymentPage />} />
 <Route path="products/:id" element={<Products />} />
 
 
@@ -51,10 +55,12 @@ export default function App (){
   <Route path="orderdetails" element={<Orderdetails />}/>
   <Route path="userdetails" element={<User />} />
   <Route path="userdetails/order/:id" element={<Userorder />}/>
+  <Route path="userdetails/edituser/:id" element={<EditUser />}/>
   <Route path="userdetails/wish/:id" element={<Userwhish />}/>
   <Route path="products" element={<Productss />}/>
   <Route path="orderhistory" element={<OrderHistory />}/>
   <Route path="edit/:id" element={<Edit />}/>
+  <Route path="createproduct" element={<CreateProduct />}/>
   <Route path="edit/create" element={<Edit />}/>
    
   

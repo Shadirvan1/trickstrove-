@@ -89,7 +89,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         return Order.objects.filter(user=user).prefetch_related("items").order_by("-created_at")
 
     @action(detail=True, methods=["patch"], url_path="cancel-item/(?P<item_id>[^/.]+)")
-    def cancel(self, request, pk=None, item_id=None):
+    def cancel(self, request,version, pk=None, item_id=None):
         try:
             order = self.get_queryset().get(pk=pk)
         except Order.DoesNotExist:
@@ -109,8 +109,6 @@ class OrderViewSet(viewsets.ModelViewSet):
         item.status = "CANCELLED"
         item.save()
 
-        if all(i.status == "CANCELLED" for i in order.items.all()):
-            order.status = "CANCELLED"
-            order.save()
+
 
         return Response({"detail": "Item cancelled successfully"}, status=status.HTTP_200_OK)
