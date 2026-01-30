@@ -24,7 +24,7 @@ const adminId =  localStorage.removeItem("adminId");
 
     return(
       <>
-<div className="admin_layout">
+<div className="z-50 admin_layout">
         <aside className="contain_div">
           <h2 className="sidebar_title" onClick={handleAdmin}>Admin Panel</h2>
 

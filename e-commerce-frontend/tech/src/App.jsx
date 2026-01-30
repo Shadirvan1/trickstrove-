@@ -26,16 +26,17 @@ import CreateProduct from "./admin.jsx/createproduct";
 import VerifyOtp from "./logins/otp_verify";
 import ResendOtp from "./logins/resendotp";
 import EditUser from "./admin.jsx/edituser";
+import ProtectedRoute from "./logins/loginprotoctor";
 export default function App (){
 
 
   return(
 <Router>
 <Routes>
-<Route path="/login" element={<Login />}/>
-<Route path="/register" element={<Register />} />
-<Route path="/verify-otp" element={<VerifyOtp />} />
-<Route path="/resend-otp" element={<ResendOtp />} />
+<Route path="/login" element={<ProtectedRoute><Login /></ProtectedRoute>}/>
+<Route path="/register" element={<ProtectedRoute><Register /></ProtectedRoute>} />
+<Route path="/verify-otp" element={<ProtectedRoute><VerifyOtp /></ProtectedRoute>} />
+<Route path="/resend-otp" element={<ProtectedRoute><ResendOtp /></ProtectedRoute>} />
 
 <Route element={<Layout />} >
 <Route path="/"  element={<Home />} />

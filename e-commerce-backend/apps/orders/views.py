@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from decimal import Decimal
-
+from django.db import transaction
 from .models import Order, OrderItem,OrderDelivery,OrderPayment
 from apps.cart.models import CartItem
 from .serializers import PlaceOrderSerializer
@@ -36,40 +36,46 @@ class PlaceOrderAPIView(APIView):
 
         address = Address.objects.get(id=address_id)
 
-        
+        with transaction.atomic():
 
-        order = Order.objects.create(
-            user=user,
-            total_price=Decimal("0.00")
-        )
-        total_amount = Decimal("0.00")
-        for item in cart_items:
-            subtotal = item.product.price * item.quantity
-            order_item = OrderItem.objects.create(
-                order=order,
-                product=item.product,
-                product_name=item.product.name,
-                product_price=item.product.price,
-                quantity=item.quantity,
-                subtotal=subtotal,
-                address=address
+            order = Order.objects.create(
+                user=user,
+                total_price=Decimal("0.00")
             )
-            
-            OrderDelivery.objects.create(
-                order_item=order_item
-            )
-            
-            OrderPayment.objects.create(
-                order_item=order_item,
-                payment_method=payment_method,
-                status="PENDING" if payment_method != "COD" else "PENDING"
-            )
-            total_amount += subtotal
-    
-        total_amount *= Decimal("0.90")
-        order.total_price = total_amount
-        order.save()
-        cart_items.delete()
+
+            total_amount = Decimal("0.00")
+
+            for item in cart_items:
+                subtotal = item.product.price * item.quantity
+
+                order_item = OrderItem.objects.create(
+                    order=order,
+                    product=item.product,
+                    product_name=item.product.name,
+                    product_price=item.product.price,
+                    quantity=item.quantity,
+                    subtotal=subtotal,
+                    address=address
+                )
+
+                OrderDelivery.objects.create(
+                    order_item=order_item
+                )
+
+                OrderPayment.objects.create(
+                    order_item=order_item,
+                    payment_method=payment_method,
+                    status="PENDING"
+                )
+
+                total_amount += subtotal
+
+            total_amount *= Decimal("0.90")
+            order.total_price = total_amount
+            order.save()
+
+            cart_items.delete()
+
 
         return Response(
             {
