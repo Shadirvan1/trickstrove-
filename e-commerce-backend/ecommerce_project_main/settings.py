@@ -33,7 +33,7 @@ DEBUG = env('DEBUG')
 ALLOWED_HOSTS = ["e-tricktrove.onrender.com"]
 
 CORS_ALLOWED_ORIGINS = [
-   "https://trickstrove.onrender.com/",
+   "https://trickstrove.onrender.com",
 ]
 
 # Application definition
