@@ -31,11 +31,7 @@ SECRET_KEY = env('SECRET_KEY')
 DEBUG = env('DEBUG')
 RAZORPAY_KEY_ID = env('RAZORPAY_KEY_ID')
 RAZORPAY_KEY_SECRET = env('RAZORPAY_KEY_SECRET')
-ALLOWED_HOSTS = [   
-    "trickstrove.onrender.com",
-    "localhost",
-    "127.0.0.1",
-    ]
+ALLOWED_HOSTS = ["*"]
 
 CORS_ALLOWED_ORIGINS = [
    "https://trickstrove.onrender.com",

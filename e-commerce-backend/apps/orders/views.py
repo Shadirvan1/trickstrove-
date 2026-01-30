@@ -118,3 +118,5 @@ class OrderViewSet(viewsets.ModelViewSet):
 
 
         return Response({"detail": "Item cancelled successfully"}, status=status.HTTP_200_OK)
+    
+

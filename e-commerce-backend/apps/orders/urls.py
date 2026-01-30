@@ -5,5 +5,7 @@ router = DefaultRouter()
 router.register('orders',views.OrderViewSet , basename='orders')
 urlpatterns = [
     path('place/',views.PlaceOrderAPIView.as_view()),
+    path('create-order/',views.create_order()),
+    path('verify/',views.verify_payment()),
     path('',include(router.urls)),
 ]
