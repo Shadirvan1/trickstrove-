@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import adminapi from "../api/adminapi";
+import adminapi from "../../api/adminapi";
 import { useNavigate } from "react-router-dom";
 
 export default function OrderDetails() {
@@ -97,7 +97,6 @@ export default function OrderDetails() {
             </div>
           </div>
 
-          {/* Payment & Delivery */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center w-full">
             <div>
               <span className="font-medium text-gray-600">Payment Status:</span>{" "}

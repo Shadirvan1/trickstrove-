@@ -1,7 +1,6 @@
 import React from "react";
 import axios from "axios";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import "./adminpanel.css"
 
 export default function Panel (){
 const navigate = useNavigate()

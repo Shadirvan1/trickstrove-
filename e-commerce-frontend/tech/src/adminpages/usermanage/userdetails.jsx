@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import adminapi from "../api/adminapi";
+import adminapi from "../../api/adminapi";
 
 export default function User() {
   const [users, setUsers] = useState([]);
@@ -129,7 +129,7 @@ export default function User() {
     </button>
 
     <button
-      onClick={() => navigate(`/admin/order/${user.id}`)}
+      onClick={() => navigate(`order/${user.id}`)}
       className="px-3 py-1 text-xs rounded bg-indigo-500 text-white hover:bg-indigo-600"
     >
       Orders

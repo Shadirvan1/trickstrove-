@@ -1,31 +1,28 @@
 import { BrowserRouter as Router,Routes,Route} from "react-router-dom";
 import Login from './logins/login';
 import Register from './logins/registration';
-import Home from "./home";
-import Products from "./product";
-import Cart from "./cart-fav/cart";
-import Success from "./cart-fav/success";
+import Home from "./userpages/homepage/home";
+import Products from "./userpages/product/product";
+import Cart from "./userpages/cart/cart";
+import Success from "./userpages/order/success";
 import Empty from "./muliple";
 import Layout from "./navbar/layout";
-import Wish from "./cart-fav/wish";
-import Order from "./cart-fav/order";
+
+import Order from "./userpages/order/order";
 import Protect from './logins/prroute'
-import Panel from './admin.jsx/adminpanel'
-import Dash from "./admin.jsx/dashboard";
-import Orderdetails from "./admin.jsx/orderdetails"
-import User from "./admin.jsx/userdetails";
-import Userorder from "./admin.jsx/userproducts";
-import Userwhish from "./admin.jsx/userwishlist";
-import Productss from "./admin.jsx/productss";
-import Edit from "./admin.jsx/edit";
-import Payment from "./cart-fav/payment"
-import PaymentPage from "./cart-fav/order_payment";
-import OrderHistory from "./admin.jsx/orderhistory";
-import Store from "./store";
-import CreateProduct from "./admin.jsx/createproduct";
+import Panel from './adminpages/dashboard/adminpanel'
+import Dash from "./adminpages/dashboard/dashboard";
+import Orderdetails from "./adminpages/ordermanage/orderdetails"
+import User from "./adminpages/usermanage/userdetails";
+import Userorder from "./adminpages/usermanage/userproducts";
+import Productss from "./adminpages/productmanage/productss";
+import Edit from "./adminpages/productmanage/edit";
+import Payment from "./userpages/address/payment"
+import PaymentPage from "./userpages/order/order_payment";
+import CreateProduct from "./adminpages/productmanage/createproduct";
 import VerifyOtp from "./logins/otp_verify";
 import ResendOtp from "./logins/resendotp";
-import EditUser from "./admin.jsx/edituser";
+import EditUser from "./adminpages/usermanage/edituser";
 import ProtectedRoute from "./logins/loginprotoctor";
 export default function App (){
 
@@ -40,10 +37,8 @@ export default function App (){
 
 <Route element={<Layout />} >
 <Route path="/"  element={<Home />} />
-<Route path="store"  element={<Store />} />
 <Route path="cart" element={<Cart />} />
 <Route path="complete" element={<Success />} />
-<Route path="wishlist" element={<Wish />} />
 <Route path="orders" element={<Order />} />
 <Route path="payment" element={<Payment />} />
 <Route path="paymentpage" element={<PaymentPage />} />
@@ -57,9 +52,7 @@ export default function App (){
   <Route path="userdetails" element={<User />} />
   <Route path="userdetails/order/:id" element={<Userorder />}/>
   <Route path="userdetails/edituser/:id" element={<EditUser />}/>
-  <Route path="userdetails/wish/:id" element={<Userwhish />}/>
   <Route path="products" element={<Productss />}/>
-  <Route path="orderhistory" element={<OrderHistory />}/>
   <Route path="edit/:id" element={<Edit />}/>
   <Route path="createproduct" element={<CreateProduct />}/>
   <Route path="edit/create" element={<Edit />}/>

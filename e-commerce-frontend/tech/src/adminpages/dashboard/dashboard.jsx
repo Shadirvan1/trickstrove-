@@ -1,6 +1,5 @@
 import React, { createContext, useEffect, useState } from "react";
-import adminapi from "../api/adminapi";
-import "./dash.css";
+import adminapi from "../../api/adminapi";
 import Chart from "./chart";
 import SalesChart from "./sales";
 

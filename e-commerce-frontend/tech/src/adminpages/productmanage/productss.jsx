@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
-import adminapi from "../api/adminapi";
+import adminapi from "../../api/adminapi";
 import { useNavigate } from "react-router-dom";
-import Plus from "../pics/plus.png";
-
+import Plus from "../../pics/plus.png"
 export default function AdminProducts() {
   const navigate = useNavigate();
 

@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { UserContext } from "./dashboard";
+import { UserContext } from "../dashboard/dashboard";
 
 import {
   BarChart,

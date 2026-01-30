@@ -1,7 +1,6 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import "./edit.css";
 
 export default function Edit() {
   const { id } = useParams();
