@@ -28,9 +28,12 @@ urlpatterns = [
     path('api/<str:version>/admin/product/',include('admin_apps.product_manage.urls')),
     path('api/<str:version>/admin/order/',include('admin_apps.order_manage.urls')),
     path('api/<str:version>/admin/dashboard/',include('admin_apps.dashboard.urls')),
-    re_path(r'^.*$', TemplateView.as_view(template_name="index.html")),
 ]
 
+urlpatterns += [
+    re_path(r"^.*$", TemplateView.as_view(template_name="index.html")),
+
+]
 from django.conf import settings
 from django.conf.urls.static import static
 

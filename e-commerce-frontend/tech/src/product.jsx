@@ -20,7 +20,7 @@ export default function SingleProduct() {
   }, [id]);
 
   if (!product) return <div className="p-6">Loading...</div>;
-
+console.log(product)
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <button
