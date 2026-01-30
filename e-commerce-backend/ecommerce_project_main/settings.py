@@ -36,7 +36,7 @@ ALLOWED_HOSTS = ["*"]
 CORS_ALLOWED_ORIGINS = [
    "https://trickstrove.onrender.com",
    "http://localhost:5174",
-   "trickstrove.vercel.app",
+   "https://trickstrove.vercel.app",
 ]
 
 # Application definition
