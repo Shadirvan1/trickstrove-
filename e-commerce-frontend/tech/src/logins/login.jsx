@@ -1,6 +1,6 @@
 import { useState } from "react";
 import logapi from "../api/logapi";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
 export default function Login() {
   const [data,setData]=useState({username:"",password:""});
@@ -38,7 +38,9 @@ const navigate = useNavigate()
         <input type="password" name="password" placeholder="Password" onChange={e=>setData({...data,password:e.target.value})} className="w-full border p-2 rounded"/>
         <button className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700">Login</button>
         {msg && <p className="text-red-500 text-sm">{msg}</p>}
+        <NavLink to="/register" >Register</NavLink>
       </form>
+
     </div>
   );
 }

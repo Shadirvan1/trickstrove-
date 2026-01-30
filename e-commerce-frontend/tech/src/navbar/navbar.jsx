@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { ShoppingCart, Package, Heart, House } from "lucide-react";
-import mylogo from "../pics/porsche.png";
+import mylogo from "../pics/favicon.png";
 import { useEffect } from "react";
 import guest from "../pics/guest.png";
 import login from "../pics/login.png";
