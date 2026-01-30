@@ -119,14 +119,14 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = env("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
-DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL")
-EMAIL_TIMEOUT = 10
+EMAIL_BACKEND = "sendgrid_backend.SendgridBackend"
+
+SENDGRID_API_KEY = os.environ.get("SENDGRID_API_KEY")
+
+DEFAULT_FROM_EMAIL = "shadirvant111@gmail.com"
+
+SENDGRID_SANDBOX_MODE_IN_DEBUG = False
+
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 import dj_database_url
