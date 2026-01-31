@@ -13,6 +13,87 @@ from rest_framework.decorators import action
 from django.shortcuts import get_object_or_404
 from .serializers import OrderSerializer
 
+
+import hmac
+import hashlib
+from django.conf import settings
+from rest_framework.decorators import api_view, permission_classes
+from django.views.decorators.csrf import csrf_exempt
+
+@csrf_exempt
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def verify_razorpay_payment(request, version=None):
+
+    data = request.data
+
+    razorpay_order_id = data.get("razorpay_order_id")
+    razorpay_payment_id = data.get("razorpay_payment_id")
+    razorpay_signature = data.get("razorpay_signature")
+    order_item_id = data.get("order_item_id")
+
+    generated_signature = hmac.new(
+        settings.RAZORPAY_KEY_SECRET.encode(),
+        f"{razorpay_order_id}|{razorpay_payment_id}".encode(),
+        hashlib.sha256
+    ).hexdigest()
+
+    if generated_signature != razorpay_signature:
+        return Response(
+            {"detail": "Payment verification failed"},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    payment = OrderPayment.objects.get(order_item_id=order_item_id)
+    payment.status = "PAID"
+    payment.razorpay_payment_id = razorpay_payment_id
+    payment.save(update_fields=["status", "razorpay_payment_id"])
+
+    return Response({"message": "Payment successful"})
+
+
+
+
+class CreateRazorpayOrderAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, version=None):
+        item_id = request.data.get("order_item_id")
+
+        item = get_object_or_404(
+            OrderItem,
+            id=item_id,
+            order__user=request.user
+        )
+
+        payment = item.payment
+
+        if payment.status == "PAID":
+            return Response(
+                {"detail": "Payment already completed"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        amount = int(item.subtotal * Decimal("100"))  # paise
+
+        razorpay_order = razorpay_client.order.create({
+            "amount": amount,
+            "currency": "INR",
+            "payment_capture": 1
+        })
+
+        payment.razorpay_order_id = razorpay_order["id"]
+        payment.save(update_fields=["razorpay_order_id"])
+
+        return Response({
+            "razorpay_order_id": razorpay_order["id"],
+            "razorpay_key": settings.RAZORPAY_KEY_ID,
+            "amount": amount,
+            "currency": "INR",
+            "product_name": item.product_name
+        })
+
+
 class PlaceOrderAPIView(APIView):
     permission_classes = [IsAuthenticated]
 

@@ -5,6 +5,8 @@ router = DefaultRouter()
 router.register('orders',views.OrderViewSet , basename='orders')
 urlpatterns = [
     path('place/',views.PlaceOrderAPIView.as_view()),
+    path("razorpay/create/", views.CreateRazorpayOrderAPIView.as_view()),
+    path("razorpay/verify/", views.verify_razorpay_payment),
 
     path('',include(router.urls)),
 ]

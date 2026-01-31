@@ -3,6 +3,16 @@ import { useNavigate } from "react-router-dom";
 import api from "../../api/api";
 
 export default function PaymentPage() {
+  const loadRazorpay = () => {
+  return new Promise((resolve) => {
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+};
+
   const [cartItems, setCartItems] = useState([]);
   const [addresses, setAddresses] = useState([]);
   const [selectedAddress, setSelectedAddress] = useState(null);
@@ -42,31 +52,86 @@ export default function PaymentPage() {
     setNewAddress((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleCompletePayment = async () => {
-    if (!selectedAddress && (!newAddress.full_name || !newAddress.phone || !newAddress.address || !newAddress.pincode)) {
-      alert("Please select or enter an address");
+const handleCompletePayment = async () => {
+  if (
+    !selectedAddress &&
+    (!newAddress.full_name ||
+      !newAddress.phone ||
+      !newAddress.address ||
+      !newAddress.pincode)
+  ) {
+    alert("Please select or enter an address");
+    return;
+  }
+
+  try {
+    let addressId = selectedAddress;
+
+    if (!selectedAddress) {
+      const res = await api.post("payment/addresses/", newAddress);
+      addressId = res.data.id;
+    }
+
+    // 1️⃣ PLACE ORDER
+    const orderRes = await api.post("order/place/", {
+      address_id: addressId,
+      payment_method: paymentMethod,
+    });
+
+    // COD → DONE
+    if (paymentMethod === "COD") {
+      alert("Order placed successfully!");
+      navigate("/complete");
       return;
     }
 
-    try {
-      let addressId = selectedAddress;
-      if (!selectedAddress) {
-        const res = await api.post("payment/addresses/", newAddress);
-        addressId = res.data.id;
-      }
-
-      await api.post("order/place/", {
-        address_id: addressId,
-        payment_method: paymentMethod,
-      });
-
-      alert("Order placed successfully!");
-      navigate("/complete");
-    } catch (err) {
-      console.error(err);
-      alert("Failed to place order");
+    // 2️⃣ ONLINE PAYMENT (UPI / CARD)
+    const isLoaded = await loadRazorpay();
+    if (!isLoaded) {
+      alert("Razorpay SDK failed to load");
+      return;
     }
-  };
+
+    // ⚠️ assuming backend returns order_items
+    const orderItemId = orderRes.data.order_items[0].id;
+
+    // 3️⃣ CREATE RAZORPAY ORDER
+    const razorRes = await api.post("razorpay/create/", {
+      order_item_id: orderItemId,
+    });
+
+    const options = {
+      key: razorRes.data.razorpay_key,
+      amount: razorRes.data.amount,
+      currency: "INR",
+      name: "TricksTrove",
+      description: "Order Payment",
+      order_id: razorRes.data.razorpay_order_id,
+
+      handler: async function (response) {
+        await api.post("razorpay/verify/", {
+          razorpay_order_id: response.razorpay_order_id,
+          razorpay_payment_id: response.razorpay_payment_id,
+          razorpay_signature: response.razorpay_signature,
+          order_item_id: orderItemId,
+        });
+
+        alert("Payment successful ");
+        navigate("/complete");
+      },
+
+      theme: { color: "#2563eb" },
+    };
+
+    const rzp = new window.Razorpay(options);
+    rzp.open();
+
+  } catch (err) {
+    console.error(err);
+    alert("Payment failed");
+  }
+};
+
 
   if (loading) return <p className="text-center mt-10">Loading...</p>;
 

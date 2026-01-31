@@ -113,6 +113,12 @@ class OrderPayment(models.Model):
         choices = PAYMENT_METHOD_CHOICES,
         default="COD"
     )
+    razorpay_order_id = models.CharField(
+        max_length=100, null=True, blank=True
+    )
+    razorpay_payment_id = models.CharField(
+        max_length=100, null=True, blank=True
+    )
 
     updated_at = models.DateTimeField(auto_now=True)
 
