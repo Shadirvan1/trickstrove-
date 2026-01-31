@@ -10,6 +10,8 @@ const navigate = useNavigate()
     try {
       await logapi.post("user/otp-resend/",{email:data});
       setMsg("OTP resent to email");
+      localStorage.setItem('email',data)
+      navigate('/verify-otp')
     } catch(err) {
       console.log(err.response.data)
 

@@ -16,6 +16,7 @@ export default function VerifyOtp() {
       });
       navigate("/login");
     } catch (err) {
+      console.log(err)
       setMsg("Invalid or expired OTP");
     }
   };
