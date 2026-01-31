@@ -32,9 +32,9 @@ export default function App (){
 <Router>
 <Routes>
 <Route path="/login" element={<ProtectedRoute><Login /></ProtectedRoute>}/>
-<Route path="/register" element={<ProtectedRoute><Register /></ProtectedRoute>} />
-<Route path="/verify-otp" element={<ProtectedRoute><VerifyOtp /></ProtectedRoute>} />
-<Route path="/resend-otp" element={<ProtectedRoute><ResendOtp /></ProtectedRoute>} />
+<Route path="/register" element={<Register />} />
+<Route path="/verify-otp" element={<VerifyOtp />} />
+<Route path="/resend-otp" element={<ResendOtp />} />
 
 <Route element={<Layout />} >
 

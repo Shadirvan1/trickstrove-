@@ -23,7 +23,7 @@ def send_email(to_email, subject, html_content):
     payload = {
         "sender": {
             "name": settings.BREVO_FROM_NAME,
-            "email": settings.BREVO_FROM_EMAIL_NAME,
+            "email": settings.BREVO_FROM_EMAIL,
         },
         "to": [{"email": to_email}],
         "subject": subject,
