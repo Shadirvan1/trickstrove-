@@ -28,14 +28,14 @@ export default function Userorder() {
 
   if (orders.length === 0) {
     return (
-      <div className="ml-[20vw] p-6 text-gray-500">
+      <div className=" p-6 text-gray-500">
         No orders found for this user
       </div>
     );
   }
 
   return (
-    <div className="ml-[20vw] w-[80vw] p-6 bg-gray-50 min-h-screen">
+    <div className="w-[80vw] p-6 bg-gray-50 min-h-screen">
       <h1 className="text-2xl font-bold mb-6 text-gray-800">
         User Orders (User ID: {id})
       </h1>

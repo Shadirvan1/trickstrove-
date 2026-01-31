@@ -10,7 +10,7 @@ from .serializers import PlaceOrderSerializer
 from apps.payment.models import Address
 from rest_framework import generics,viewsets
 from rest_framework.decorators import action
-
+from django.shortcuts import get_object_or_404
 from .serializers import OrderSerializer
 
 class PlaceOrderAPIView(APIView):
@@ -92,31 +92,43 @@ class OrderViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        return Order.objects.filter(user=user).prefetch_related("items").order_by("-created_at")
+        return (
+            Order.objects
+            .filter(user=user)
+            .prefetch_related("items", "items__delivery", "items__payment")
+            .order_by("-created_at")
+        )
 
     @action(detail=True, methods=["patch"], url_path="cancel-item/(?P<item_id>[^/.]+)")
-    def cancel(self, request,version, pk=None, item_id=None):
-        try:
-            order = self.get_queryset().get(pk=pk)
-        except Order.DoesNotExist:
-            return Response({"detail": "Order not found"}, status=status.HTTP_404_NOT_FOUND)
+    def cancel(self, request, version, pk=None, item_id=None):
 
-        try:
-            item = order.items.get(pk=item_id)
-        except OrderItem.DoesNotExist:
-            return Response({"detail": "Item not found"}, status=status.HTTP_404_NOT_FOUND)
+        order = get_object_or_404(self.get_queryset(), pk=pk)
+        item = get_object_or_404(order.items, pk=item_id)
 
-        if item.status in ["CANCELLED", "SHIPPED", "DELIVERED"]:
+        if not hasattr(item, "delivery"):
             return Response(
-                {"detail": f"Cannot cancel item with status {item.status}"},
+                {"detail": "Delivery info not found"},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        item.status = "CANCELLED"
-        item.save()
+        delivery = item.delivery
 
+        if delivery.status in ["SHIPPED", "DELIVERED", "CANCELLED"]:
+            return Response(
+                {"detail": f"Cannot cancel item with status {delivery.status}"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
+        delivery.status = "CANCELLED"
+        delivery.save(update_fields=["status"])
 
-        return Response({"detail": "Item cancelled successfully"}, status=status.HTTP_200_OK)
-    
+        if hasattr(item, "payment"):
+            payment = item.payment
+            if payment.status == "PAID":
+                payment.status = "REFUNDED"
+                payment.save(update_fields=["status"])
 
+        return Response(
+            {"detail": "Item cancelled successfully"},
+            status=status.HTTP_200_OK
+        )
