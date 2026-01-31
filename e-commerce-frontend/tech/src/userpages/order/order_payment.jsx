@@ -102,7 +102,7 @@ export default function PaymentPage() {
       }
 
       /* 5️⃣ Create Razorpay order */
-      const razorRes = await api.post("razorpay/create/", {
+      const razorRes = await api.post("order/razorpay/create/", {
         order_id: orderId,
       });
 
@@ -116,7 +116,7 @@ export default function PaymentPage() {
 
         handler: async function (response) {
           try {
-            await api.post("razorpay/verify/", {
+            await api.post("order/razorpay/verify/", {
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
