@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../api/api";
 
-/* ---------- Razorpay loader ---------- */
 const loadRazorpay = () => {
   return new Promise((resolve) => {
     if (window.Razorpay) return resolve(true);
@@ -31,7 +30,6 @@ export default function PaymentPage() {
     pincode: "",
   });
 
-  /* ---------- Load cart + address ---------- */
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -51,25 +49,12 @@ export default function PaymentPage() {
     fetchData();
   }, [navigate]);
 
-  /* ---------- Address input ---------- */
   const handleNewAddressChange = (e) => {
     const { name, value } = e.target;
     setNewAddress((prev) => ({ ...prev, [name]: value }));
   };
 
-  /* ---------- Main payment handler ---------- */
   const handleCompletePayment = async () => {
-    if (
-      !selectedAddress &&
-      (!newAddress.full_name ||
-        !newAddress.phone ||
-        !newAddress.address ||
-        !newAddress.pincode)
-    ) {
-      alert("Please select or add address");
-      return;
-    }
-
     try {
       let addressId = selectedAddress;
 
@@ -83,7 +68,14 @@ export default function PaymentPage() {
         payment_method: paymentMethod,
       });
 
-      const orderId = orderRes.data.order_id;
+      const orderItems = orderRes.data.items;
+
+      if (!orderItems || orderItems.length === 0) {
+        alert("No order items found");
+        return;
+      }
+
+      const orderItemId = orderItems[0].order_item_id;
 
       if (paymentMethod === "COD") {
         alert("Order placed successfully!");
@@ -98,24 +90,23 @@ export default function PaymentPage() {
       }
 
       const razorRes = await api.post("order/razorpay/create/", {
-        order_id: orderId,
+        order_item_id: orderItemId,
       });
 
       const options = {
-        key: razorRes.data.key,
+        key: razorRes.data.razorpay_key,
         amount: razorRes.data.amount,
         currency: "INR",
         name: "TricksTrove",
-        description: "Order Payment",
+        description: razorRes.data.product_name,
         order_id: razorRes.data.razorpay_order_id,
 
         handler: async function (response) {
           try {
             await api.post("order/razorpay/verify/", {
-              razorpay_order_id: response.razorpay_order_id,
+              order_item_id: orderItemId,
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
-              order_id: orderId,
             });
 
             alert("Payment successful!");
@@ -151,7 +142,6 @@ export default function PaymentPage() {
 
   return (
     <div className="mt-20 min-h-screen p-6 bg-gray-100 flex flex-col lg:flex-row gap-6">
-
       <div className="flex-1 bg-white p-4 rounded shadow">
         <h2 className="text-xl font-bold mb-4">Cart Items</h2>
 
@@ -175,11 +165,9 @@ export default function PaymentPage() {
         )}
       </div>
 
-      {/* -------- Payment -------- */}
       <div className="w-full lg:w-96 bg-white p-6 rounded shadow">
         <h2 className="text-xl font-bold mb-4">Delivery & Payment</h2>
 
-        {/* Address select */}
         {addresses.length > 0 && (
           <select
             value={selectedAddress}
@@ -195,7 +183,6 @@ export default function PaymentPage() {
           </select>
         )}
 
-        {/* New address */}
         {!selectedAddress && (
           <div className="space-y-2 mb-4">
             <input
@@ -229,7 +216,6 @@ export default function PaymentPage() {
           </div>
         )}
 
-        {/* Payment method */}
         <select
           value={paymentMethod}
           onChange={(e) => setPaymentMethod(e.target.value)}
