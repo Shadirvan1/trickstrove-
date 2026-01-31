@@ -1,17 +1,16 @@
-from django.shortcuts import render
-from rest_framework import generics,status,mixins,views
+from rest_framework import views, status
 from rest_framework.response import Response
-from .models import CoustomUser
-from .serializers import UserSerializer,LoginSerializer,OtpSerializer,ResendSerializer
-from django.contrib.auth import authenticate,login,logout
-from django.core.mail import send_mail
-from django.conf import settings
-import random
-from .utils import generate_otp,send_otp_email
-from django.utils.timezone import now
-from datetime import timedelta
 from rest_framework.permissions import AllowAny
-# Create your views here.
+from django.utils.timezone import now
+
+from .models import CoustomUser
+from .serializers import (
+    UserSerializer,
+    LoginSerializer,
+    OtpSerializer,
+    ResendSerializer,
+)
+from .utils import generate_otp, send_otp_email
 
 
 class RegisterApiView(views.APIView):
@@ -30,9 +29,7 @@ class RegisterApiView(views.APIView):
             user.otp_created_at = now()
             user.save(update_fields=["otp", "otp_created_at"])
 
-            email_sent = send_otp_email(email, otp)
-
-            if not email_sent:
+            if not send_otp_email(email, otp):
                 return Response(
                     {"error": "OTP email failed to send"},
                     status=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -44,62 +41,80 @@ class RegisterApiView(views.APIView):
             )
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
 
 
 class OtpApiView(views.APIView):
     permission_classes = [AllowAny]
+
     def post(self, request, version):
         serializer = OtpSerializer(data=request.data)
 
         if not serializer.is_valid():
-            return Response({
-                "success": False,
-                "message": "OTP verification failed",
-                "errors": serializer.errors
-            }, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {
+                    "success": False,
+                    "message": "OTP verification failed",
+                    "errors": serializer.errors,
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
-        user = serializer.validated_data['user']
+        user = serializer.validated_data["user"]
         user.is_verified = True
         user.otp = None
-        user.save(update_fields=['is_verified', 'otp'])
+        user.save(update_fields=["is_verified", "otp"])
 
-        return Response({
-            "success": True,
-            "message": "OTP verified successfully"
-        }, status=status.HTTP_200_OK)
+        return Response(
+            {"success": True, "message": "OTP verified successfully"},
+            status=status.HTTP_200_OK,
+        )
+
+
 class OtpResentApiView(views.APIView):
     permission_classes = [AllowAny]
+
     def post(self, request, version):
         serializer = ResendSerializer(data=request.data)
+
         if not serializer.is_valid():
-            return Response({'success':False,'message':'Failed to resend OTP ','errors':serializer.errors},status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {
+                    "success": False,
+                    "message": "Failed to resend OTP",
+                    "errors": serializer.errors,
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         email = serializer.validated_data["email"]
         user = CoustomUser.objects.get(email=email)
 
         otp = generate_otp()
-
-        user.otp = otp                
+        user.otp = otp
         user.otp_created_at = now()
         user.save(update_fields=["otp", "otp_created_at"])
 
-        sent_otp_email(email, otp)
+        send_otp_email(email, otp)
 
         return Response(
             {"message": "OTP resent successfully"},
             status=status.HTTP_200_OK,
         )
+
+
 class LoginApiView(views.APIView):
     permission_classes = [AllowAny]
 
-    def post(self,request,version):
-        print("POST HIT")
-     
-        serializer = LoginSerializer(data=request.data,context={'request': request})
-        serializer.is_valid(raise_exception=True)
-        return Response({'message':'Login successfully completed','user':serializer.validated_data},
-            
-            status=status.HTTP_200_OK
+    def post(self, request, version):
+        serializer = LoginSerializer(
+            data=request.data, context={"request": request}
         )
-        # return Response({'message':'Failed to login','errors':serializer.errors},status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+
+        return Response(
+            {
+                "message": "Login successfully completed",
+                "user": serializer.validated_data,
+            },
+            status=status.HTTP_200_OK,
+        )
