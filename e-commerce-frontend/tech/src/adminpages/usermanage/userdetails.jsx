@@ -62,7 +62,7 @@ export default function User() {
   }
 
   return (
-    <div className="ml-[20vw] w-[80vw] p-6 bg-gray-50 min-h-screen">
+    <div className=" w-[80vw] p-6 bg-gray-50 min-h-screen">
       <h1 className="text-3xl font-bold mb-6 text-gray-800">
         User Management
       </h1>
@@ -122,7 +122,7 @@ export default function User() {
 {user.id !== user_id && (
   <>
     <button
-      onClick={() => navigate(`/admin/edituser/${user.id}`)}
+      onClick={() => navigate(`edituser/${user.id}`)}
       className="px-3 py-1 text-xs rounded bg-blue-500 text-white hover:bg-blue-600"
     >
       Edit

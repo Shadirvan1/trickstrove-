@@ -60,11 +60,11 @@ export default function AdminProducts() {
   };
 
   if (loading) {
-    return <div className="ml-[20vw] p-6">Loading products...</div>;
+    return <div className=" p-6">Loading products...</div>;
   }
 
   return (
-    <div className="ml-[20vw] w-[80vw] p-6 bg-gray-50 min-h-screen">
+    <div className=" w-[80vw] p-6 bg-gray-50 min-h-screen">
       <h1 className="text-3xl font-bold mb-6">Product Management</h1>
 
       <div className="flex gap-3 mb-6 flex-wrap">

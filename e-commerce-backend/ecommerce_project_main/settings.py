@@ -121,13 +121,10 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
-EMAIL_BACKEND = "sendgrid_backend.SendgridBackend"
 
-SENDGRID_API_KEY = os.environ.get("SENDGRID_API_KEY")
-
-DEFAULT_FROM_EMAIL = "shadirvant111@gmail.com"
-
-SENDGRID_SANDBOX_MODE_IN_DEBUG = False
+BREVO_API_KEY = os.getenv("BREVO_API_KEY")
+BREVO_FROM_EMAIL = os.getenv("BREVO_FROM_EMAIL")
+BREVO_FROM_NAME = os.getenv("BREVO_FROM_NAME")
 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases

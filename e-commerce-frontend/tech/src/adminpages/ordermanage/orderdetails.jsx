@@ -40,7 +40,7 @@ export default function OrderDetails() {
 
 
   return (
-<div className="ml-[18vw] w-[80vw] p-6 bg-gray-50 min-h-screen">
+<div className=" w-[80vw] p-6 bg-gray-50 min-h-screen">
   <h1 className="text-3xl font-bold mb-6 text-gray-800">Order Details</h1>
 
   {orders.length === 0 ? (

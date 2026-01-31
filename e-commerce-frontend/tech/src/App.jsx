@@ -24,6 +24,7 @@ import VerifyOtp from "./logins/otp_verify";
 import ResendOtp from "./logins/resendotp";
 import EditUser from "./adminpages/usermanage/edituser";
 import ProtectedRoute from "./logins/loginprotoctor";
+// import Homepageprotector from "./logins/homepageprotector"
 export default function App (){
 
 
@@ -36,6 +37,7 @@ export default function App (){
 <Route path="/resend-otp" element={<ProtectedRoute><ResendOtp /></ProtectedRoute>} />
 
 <Route element={<Layout />} >
+
 <Route path="/"  element={<Home />} />
 <Route path="cart" element={<Cart />} />
 <Route path="complete" element={<Success />} />

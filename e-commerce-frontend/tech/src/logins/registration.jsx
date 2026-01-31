@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 export default function Register() {
   const navigate = useNavigate();
-
+ const [msg,setMsg]=useState()
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -14,6 +14,7 @@ export default function Register() {
   });
 
   const [errors, setErrors] = useState({});
+
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });

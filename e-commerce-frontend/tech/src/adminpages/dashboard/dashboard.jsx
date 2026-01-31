@@ -17,11 +17,10 @@ export default function Dash() {
 
   useEffect(() => {
     adminapi
-      .get("dashboard/details/") 
+      .get("dashboard/details/")
       .then((res) => {
         const data = res.data;
 
-        // Calculate pending revenue if null
         const pendingRevenue = data.pending_revenue || 0;
         const totalRevenue = data.total_revenue || 0;
 
@@ -41,39 +40,65 @@ export default function Dash() {
       .catch((err) => console.log("Error fetching dashboard data:", err));
   }, []);
 
+  const stats = [
+    { label: "Total Products", value: dashboardData.totalProducts },
+    { label: "Pending Orders", value: dashboardData.pendingOrders },
+    { label: "Pending Revenue", value: `₹ ${dashboardData.pendingSales}` },
+    { label: "Total Users", value: dashboardData.totalUsers },
+    { label: "Overall Orders", value: dashboardData.overallOrders },
+    { label: "Overall Sales", value: `₹ ${dashboardData.overallSales}` },
+  ];
+
   return (
     <UserContext.Provider value={dashboardData}>
-      <>
-        <h1 className="h1">Dashboard</h1>
+      <div className="space-y-8">
 
-        <div className="user_div">
-          <div>
-            <h1>Total products: {dashboardData.totalProducts}</h1>
-          </div>
-          <div>
-            <h1>Pending orders: {dashboardData.pendingOrders}</h1>
-          </div>
-          <div>
-            <h1>Pending revenue: {dashboardData.pendingSales}</h1>
-          </div>
-          <div>
-            <h1>Total users: {dashboardData.totalUsers}</h1>
-          </div>
-          <div>
-            <h1>Overall orders: {dashboardData.overallOrders}</h1>
-          </div>
-          <div>
-            <h1>Overall sales: {dashboardData.overallSales}</h1>
-          </div>
+        {/* Page Title */}
+        <h1 className="text-2xl font-semibold text-gray-800">
+          Dashboard
+        </h1>
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+          {stats.map((item) => (
+            <div
+              key={item.label}
+              className="rounded-2xl bg-white p-6 shadow-sm border border-gray-100"
+            >
+              <p className="text-sm text-gray-500">{item.label}</p>
+              <h2 className="mt-2 text-2xl font-bold text-gray-800">
+                {item.value}
+              </h2>
+            </div>
+          ))}
         </div>
 
-        <div className="chart">
-          <Chart />
-        </div>
-        <div className="sales">
-          <SalesChart />
-        </div>
-      </>
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+  
+  <div className="col-span-2 rounded-2xl bg-white p-6 shadow-sm border border-gray-100">
+    <h2 className="mb-4 text-lg font-semibold text-gray-700">
+      Orders Overview
+    </h2>
+
+    <div className="w-[100%]">
+      <Chart />
+    </div>
+  </div>
+
+  <div className="w-[100%] rounded-2xl bg-white p-6 shadow-sm border border-gray-100">
+    <h2 className="mb-4 text-lg font-semibold text-gray-700">
+      Sales Overview
+    </h2>
+
+    <div>
+      <SalesChart />
+    </div>
+  </div>
+
+</div>
+
+
+      </div>
     </UserContext.Provider>
   );
 }

@@ -56,79 +56,98 @@ export default function CreateProduct() {
       setLoading(false);
     }
   };
-
-  return (
-    <div className="ml-[20vw] w-[80vw] p-6 bg-gray-50 min-h-screen">
-      <h1 className="text-3xl font-bold mb-6">Create Product</h1>
+return (
+  <div className="min-h-screen w-full bg-slate-100 px-6 py-8">
+    <div className="mx-auto max-w-5xl">
+      <h1 className="mb-8 text-3xl font-bold text-slate-800">
+        Create Product
+      </h1>
 
       <form
         onSubmit={handleSubmit}
-        className="bg-white p-6 rounded-lg shadow max-w-3xl"
+        className="rounded-xl bg-white p-8 shadow-lg"
       >
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <div>
-            <label className="text-sm font-semibold">Product Name</label>
+            <label className="mb-1 block text-sm font-medium text-slate-700">
+              Product Name
+            </label>
             <input
               name="name"
               required
               value={formData.name}
               onChange={handleChange}
-              className="input"
+              className="w-full rounded-lg border border-slate-300 px-4 py-2 text-sm
+                         focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
             />
           </div>
 
           <div>
-            <label className="text-sm font-semibold">Price</label>
+            <label className="mb-1 block text-sm font-medium text-slate-700">
+              Price
+            </label>
             <input
               name="price"
               type="number"
               required
               value={formData.price}
               onChange={handleChange}
-              className="input"
+              className="w-full rounded-lg border border-slate-300 px-4 py-2 text-sm
+                         focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
             />
           </div>
 
           <div>
-            <label className="text-sm font-semibold">Quantity</label>
+            <label className="mb-1 block text-sm font-medium text-slate-700">
+              Quantity
+            </label>
             <input
               name="quantity"
               type="number"
               required
               value={formData.quantity}
               onChange={handleChange}
-              className="input"
+              className="w-full rounded-lg border border-slate-300 px-4 py-2 text-sm
+                         focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
             />
           </div>
 
           <div>
-            <label className="text-sm font-semibold">Category</label>
+            <label className="mb-1 block text-sm font-medium text-slate-700">
+              Category
+            </label>
             <input
               name="category"
               value={formData.category}
               onChange={handleChange}
-              className="input"
+              className="w-full rounded-lg border border-slate-300 px-4 py-2 text-sm
+                         focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
             />
           </div>
 
           <div>
-            <label className="text-sm font-semibold">Brand</label>
+            <label className="mb-1 block text-sm font-medium text-slate-700">
+              Brand
+            </label>
             <input
               name="brand"
               value={formData.brand}
               onChange={handleChange}
-              className="input"
+              className="w-full rounded-lg border border-slate-300 px-4 py-2 text-sm
+                         focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
             />
           </div>
 
           <div>
-            <label className="text-sm font-semibold">Status</label>
+            <label className="mb-1 block text-sm font-medium text-slate-700">
+              Status
+            </label>
             <select
               name="activity"
               value={formData.activity}
               onChange={handleChange}
-              className="input"
+              className="w-full rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm
+                         focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
             >
               <option value="active">Active</option>
               <option value="inactive">Inactive</option>
@@ -136,33 +155,49 @@ export default function CreateProduct() {
           </div>
         </div>
 
-        <div className="mt-4">
-          <label className="text-sm font-semibold">Description</label>
+        <div className="mt-6">
+          <label className="mb-1 block text-sm font-medium text-slate-700">
+            Description
+          </label>
           <textarea
             name="description"
             rows="4"
             value={formData.description}
             onChange={handleChange}
-            className="input"
+            className="w-full rounded-lg border border-slate-300 px-4 py-2 text-sm
+                       focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
           />
         </div>
 
-        <div className="mt-4">
-          <label className="text-sm font-semibold">Product Image</label>
-          <input type="file" accept="image/*" onChange={handleImage} />
+        <div className="mt-6">
+          <label className="mb-2 block text-sm font-medium text-slate-700">
+            Product Image
+          </label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImage}
+            className="block w-full text-sm text-slate-600
+                       file:mr-4 file:rounded-lg file:border-0
+                       file:bg-blue-50 file:px-4 file:py-2
+                       file:text-sm file:font-medium
+                       file:text-blue-600 hover:file:bg-blue-100"
+          />
+
           {preview && (
             <img
               src={preview}
               alt="preview"
-              className="mt-2 w-40 h-40 object-cover rounded"
+              className="mt-4 h-40 w-40 rounded-lg object-cover ring-1 ring-slate-200"
             />
           )}
         </div>
 
-        <div className="flex gap-3 mt-6">
+        <div className="mt-8 flex gap-4">
           <button
             disabled={loading}
-            className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            className="rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-medium text-white
+                       hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {loading ? "Creating..." : "Create Product"}
           </button>
@@ -170,14 +205,15 @@ export default function CreateProduct() {
           <button
             type="button"
             onClick={() => navigate(-1)}
-            className="px-6 py-2 bg-gray-300 rounded hover:bg-gray-400"
+            className="rounded-lg bg-slate-200 px-6 py-2.5 text-sm font-medium text-slate-700
+                       hover:bg-slate-300"
           >
             Cancel
           </button>
         </div>
       </form>
-
-      
     </div>
-  );
+  </div>
+);
+
 }

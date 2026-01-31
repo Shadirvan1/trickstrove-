@@ -23,7 +23,7 @@ export default function Userorder() {
   };
 
   if (loading) {
-    return <div className="ml-[20vw] p-6">Loading orders...</div>;
+    return <div className=" p-6">Loading orders...</div>;
   }
 
   if (orders.length === 0) {

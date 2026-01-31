@@ -24,7 +24,7 @@ export default function SalesChart() {
   ];
 
   return (
-    <div style={{ width: "35%", height: 500 }}>
+    <div style={{ width: "100%", height: 500 }}>
       <h2 style={{ textAlign: "center" }}>Sales Overview</h2>
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
