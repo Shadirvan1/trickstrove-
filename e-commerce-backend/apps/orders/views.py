@@ -100,8 +100,6 @@ class CreateRazorpayOrderAPIView(APIView):
             "currency": "INR",
             "product_name": order_item.product_name
         }, status=status.HTTP_200_OK)
-
-
 class PlaceOrderAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -124,6 +122,8 @@ class PlaceOrderAPIView(APIView):
             )
 
         address = get_object_or_404(Address, id=address_id, user=user)
+
+        created_items = []
 
         with transaction.atomic():
             order = Order.objects.create(
@@ -154,9 +154,9 @@ class PlaceOrderAPIView(APIView):
                     status="PENDING"
                 )
 
+                created_items.append(order_item)
                 total_amount += subtotal
 
-            # Apply 10% discount
             order.total_price = total_amount * Decimal("0.90")
             order.save(update_fields=["total_price"])
 
@@ -166,13 +166,20 @@ class PlaceOrderAPIView(APIView):
             {
                 "message": "Order placed successfully",
                 "order_id": order.id,
+                "items": [
+                    {
+                        "order_item_id": item.id,
+                        "product_name": item.product_name,
+                        "quantity": item.quantity,
+                        "subtotal": item.subtotal
+                    }
+                    for item in created_items
+                ],
                 "total_amount": order.total_price,
                 "payment_method": payment_method
             },
             status=status.HTTP_201_CREATED
         )
-
-
 class OrderViewSet(viewsets.ModelViewSet):
     serializer_class = OrderSerializer
     permission_classes = [IsAuthenticated]

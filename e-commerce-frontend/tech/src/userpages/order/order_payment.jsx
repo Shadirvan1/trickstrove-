@@ -73,13 +73,11 @@ export default function PaymentPage() {
     try {
       let addressId = selectedAddress;
 
-      /* 1️⃣ Create address if needed */
       if (!selectedAddress) {
         const addrRes = await api.post("payment/addresses/", newAddress);
         addressId = addrRes.data.id;
       }
 
-      /* 2️⃣ Place order */
       const orderRes = await api.post("order/place/", {
         address_id: Number(addressId),
         payment_method: paymentMethod,
@@ -87,21 +85,18 @@ export default function PaymentPage() {
 
       const orderId = orderRes.data.order_id;
 
-      /* 3️⃣ COD flow */
       if (paymentMethod === "COD") {
         alert("Order placed successfully!");
         navigate("/complete");
         return;
       }
 
-      /* 4️⃣ Online payment */
       const razorLoaded = await loadRazorpay();
       if (!razorLoaded) {
         alert("Razorpay failed to load");
         return;
       }
 
-      /* 5️⃣ Create Razorpay order */
       const razorRes = await api.post("order/razorpay/create/", {
         order_id: orderId,
       });
@@ -157,7 +152,6 @@ export default function PaymentPage() {
   return (
     <div className="mt-20 min-h-screen p-6 bg-gray-100 flex flex-col lg:flex-row gap-6">
 
-      {/* -------- Cart -------- */}
       <div className="flex-1 bg-white p-4 rounded shadow">
         <h2 className="text-xl font-bold mb-4">Cart Items</h2>
 
