@@ -24,11 +24,10 @@ import VerifyOtp from "./logins/otp_verify";
 import ResendOtp from "./logins/resendotp";
 import EditUser from "./adminpages/usermanage/edituser";
 import ProtectedRoute from "./logins/loginprotoctor";
-// import Homepageprotector from "./logins/homepageprotector"
 export default function App (){
 
 
-  return(
+return(
 <Router>
 <Routes>
 <Route path="/login" element={<ProtectedRoute><Login /></ProtectedRoute>}/>
