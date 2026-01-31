@@ -1,11 +1,5 @@
 import random
-def generate_otp():
-    return str(random.randint(100000, 999999))
-import requests
-from django.conf import settings
 
-BREVO_API_URL = "https://api.brevo.com/v3/smtp/email"
-import random
 import requests
 from django.conf import settings
 
